@@ -1,0 +1,20 @@
+{
+  "name": "@leolee9086/dsh-hybrid-recall",
+  "version": "0.1.0",
+  "description": "Shared keyword and vector recall with typed provider contracts",
+  "author": "leolee9086",
+  "license": "MIT",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": { ".": { "types": "./lib/index.d.ts", "import": "./lib/index.js" } },
+  "files": ["lib", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.ts",
+    "prepack": "pnpm build && pnpm test"
+  },
+  "engines": { "node": ">=22.19.0" },
+  "publishConfig": { "access": "public" },
+  "devDependencies": { "typescript": "5.8.3" }
+}
