@@ -19,4 +19,10 @@ const result = await hybridRecall({
 
 开发使用 `pnpm install`、`pnpm build`、`pnpm test`。TypeScript 源码在 src，编译后的 JavaScript 和声明文件在 lib 并随包提交；消费者不需要编译 TypeScript。
 
-当前为未发布的 0.1.0 开发包。相邻查询仓暂用 `file:../dsh-hybrid-recall`，正式分发时需发布此包并把消费者依赖替换成发布版本。
+0.1.0 通过 GitHub Release 分发，使用以下固定版本地址安装：
+
+```sh
+pnpm add https://github.com/leolee9086/dsh-hybrid-recall/releases/download/v0.1.0/leolee9086-dsh-hybrid-recall-0.1.0.tgz
+```
+
+npm registry 发布需要维护者完成二次认证；当前消费者锁定上述远端产物，不需要相邻工作树。
