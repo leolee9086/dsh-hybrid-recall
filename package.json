@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Shared keyword and vector recall with typed provider contracts",
   "author": "leolee9086",
+  "repository": { "type": "git", "url": "git+https://github.com/leolee9086/dsh-hybrid-recall.git" },
   "license": "MIT",
   "type": "module",
   "main": "./lib/index.js",
