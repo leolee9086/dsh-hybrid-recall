@@ -33,3 +33,20 @@ test('被动门槛在返回条数截断前筛除弱候选', async () => {
   } }, { query: 'clue', passive: true, limit: 1 });
   assert.deepEqual(result.items.map(item => item.blockId), ['strong']);
 });
+
+test('相关优先：更相关的旧记忆不会被刚记下的弱候选压过', async () => {
+  const relevantOld = { blockId: 'relevant-old', fresh: false, time: 1, vectorSources: [{ sourceId: 'local', similarity: 0.82 }] };
+  const freshWeak = { blockId: 'fresh-weak', fresh: true, time: 9, vectorSources: [{ sourceId: 'local', similarity: 0.41 }] };
+  const result = await hybridRecall({ memory: { recall: () => ({ items: [] }) },
+    vectors: { search: () => ({ items: [relevantOld, freshWeak] }) } }, { query: 'clue', limit: 2 });
+  assert.deepEqual(result.items.map(item => item.blockId), ['relevant-old', 'fresh-weak']);
+});
+
+test('并列时新鲜优先，再按时间', async () => {
+  // 两路各自的第一名拿到同样的 RRF 贡献，于是由新鲜度决定先后。
+  const stale = { blockId: 'stale', fresh: false, time: 5 };
+  const fresh = { blockId: 'fresh', fresh: true, time: 3 };
+  const result = await hybridRecall({ memory: { recall: () => ({ items: [stale] }) },
+    vectors: { search: () => ({ items: [fresh] }) } }, { query: 'clue', limit: 2 });
+  assert.deepEqual(result.items.map(item => item.blockId), ['fresh', 'stale']);
+});

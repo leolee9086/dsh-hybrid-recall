@@ -67,7 +67,10 @@ export function extractKeywords(text: string): string[] {
 
 /**
  * 合并关键词与语义候选，以各自排名累计 RRF，不直接相加异构原始分数。
- * 本次抽离保留旧的新鲜度优先及被动阈值；这不是通用排序策略已验收的声明。
+ *
+ * 输出顺序是"相关优先，新鲜只在并列时作偏好"：刚记下但无关的记忆不该压过更相关的旧记忆。
+ * 新鲜度仍然是候选自带的属性，调用方可以按自己的任务标准再排一次。
+ * 被动阈值保留在截断之前判断。
  */
 export async function hybridRecall<T extends RecallCandidate>(
   { memory, vectors }: RecallProviders<T>, request: RecallRequest = {},
@@ -116,7 +119,8 @@ export async function hybridRecall<T extends RecallCandidate>(
       return Number.isFinite(source.similarity) && source.similarity >= threshold;
     });
   });
-  const items = eligible.sort((a, b) => Number(b.fresh) - Number(a.fresh) || b.recallScore - a.recallScore || b.time - a.time).slice(0, limit);
+  // 相关优先，新鲜只在并列时作偏好：刚记下的无关记忆不该压过更相关的旧记忆。
+  const items = eligible.sort((a, b) => b.recallScore - a.recallScore || Number(b.fresh) - Number(a.fresh) || b.time - a.time).slice(0, limit);
   return {
     items, total: merged.size, fresh: items.filter((item) => item.fresh).length,
     stale: items.filter((item) => !item.fresh).length, failures: semantic.failures ?? [],
